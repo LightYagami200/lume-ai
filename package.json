@@ -1,0 +1,30 @@
+{
+  "name": "lume",
+  "version": "0.0.1",
+  "description": "A powerful yet simple library to build your own AI applications.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Light Yagami <its_lightyagami@icloud.com>",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.5",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/node": "^22.15.21",
+    "dotenv": "^16.5.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@pinecone-database/pinecone": "^6.0.1",
+    "ioredis": "^5.6.1",
+    "openai": "^4.103.0",
+    "vectra": "^0.11.1",
+    "voyageai": "^0.0.4"
+  }
+}
