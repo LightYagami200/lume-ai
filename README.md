@@ -20,9 +20,9 @@ Hi there! I'm **Luna**, your friendly AI dev assistant, and I'm here to introduc
 ## 🚀 Installation
 
 ```bash
-npm install lume
+npm install lume-ai
 # or
-yarn add lume
+yarn add lume-ai
 ```
 
 ---
@@ -30,11 +30,11 @@ yarn add lume
 ## 🦄 Quickstart
 
 ```ts
-import { Lume } from 'lume'
-import { OpenAI, Anthropic } from 'lume/llms'
-import { Memory, Redis } from 'lume/histories'
-import { Vectra, Pinecone } from 'lume/vector-dbs'
-import { Custom, Friendly } from 'lume/genes'
+import { Lume } from 'lume-ai'
+import { OpenAI, Anthropic } from 'lume-ai/llms'
+import { Memory, Redis } from 'lume-ai/histories'
+import { Vectra, Pinecone } from 'lume-ai/vector-dbs'
+import { Custom, Friendly } from 'lume-ai/genes'
 
 const lume = new Lume({
   llm: new OpenAI(process.env.OPENAI_API_KEY!),
