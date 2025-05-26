@@ -1,6 +1,6 @@
 {
   "name": "lume-ai",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A powerful yet simple library to build your own AI applications.",
   "main": "index.js",
   "scripts": {
