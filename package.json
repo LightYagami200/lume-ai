@@ -7,7 +7,14 @@
     "build": "tsc",
     "test": "jest"
   },
-  "keywords": [],
+  "keywords": [
+    "ai",
+    "llm",
+    "vector-db",
+    "gene",
+    "lume",
+    "lume-ai"
+  ],
   "author": "Light Yagami <its_lightyagami@icloud.com>",
   "license": "ISC",
   "packageManager": "pnpm@10.6.5",
