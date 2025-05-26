@@ -16,7 +16,7 @@
     "lume-ai"
   ],
   "author": "Light Yagami <its_lightyagami@icloud.com>",
-  "license": "ISC",
+  "license": "MIT",
   "packageManager": "pnpm@10.6.5",
   "repository": {
     "type": "git",
