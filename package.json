@@ -11,6 +11,10 @@
   "author": "Light Yagami <its_lightyagami@icloud.com>",
   "license": "ISC",
   "packageManager": "pnpm@10.6.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LightYagami20/lume-ai.git"
+  },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/node": "^22.15.21",
