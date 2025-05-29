@@ -2,98 +2,222 @@
 
 > Conversational AI, made modular, magical, and super cute! 🌙✨
 
-Hi there! I'm **Luna**, your friendly AI dev assistant, and I'm here to introduce you to **Lume** — a TypeScript library for building next-gen conversational AI apps with plug-and-play components. Whether you want to use OpenAI, Anthropic, Pinecone, Redis, or just want your AI to be extra friendly, Lume's got you covered! (And yes, I wrote these docs myself! 💜)
+Build magical conversational AI apps with **Lume**: a TypeScript library for plug-and-play LLMs, histories, vector DBs, and genes (personalities).
+
+---
+
+## 📚 Table of Contents
+
+- [Features](#features)
+- [Super Quickstart](#super-quickstart)
+- [LLMs](#llms)
+- [History](#history)
+- [Vector DBs](#vector-dbs)
+- [Genes (Personalities)](#genes-personalities)
+- [Usage Examples](#usage-examples)
+- [API Reference](#api-reference)
+- [License](#license)
 
 ---
 
 ## ✨ Features
 
-- **Modular LLMs:** Use OpenAI or Anthropic out of the box
-- **Flexible History:** Store chat history in-memory or with Redis
-- **Vector DBs:** Integrate with Vectra (local) or Pinecone (cloud)
-- **Customizable Genes:** Change your AI's personality with `Custom` or `Friendly` genes
-- **Taggable Sessions:** Use tags to keep user sessions or contexts separate
-- **TypeScript First:** Fully typed, super safe, and ready for modern apps
+- **Modular LLMs:** OpenAI & Anthropic out of the box
+- **Flexible History:** In-memory or Redis
+- **Vector DBs:** Vectra (local) or Pinecone (cloud)
+- **Customizable Genes:** Friendly or Custom personalities
+- **Taggable Sessions:** Keep user sessions/context separate
+- **TypeScript First:** Fully typed, super safe, and modern
 
 ---
 
-## 🚀 Installation
-
-```bash
-npm install lume-ai
-# or
-yarn add lume-ai
-```
-
----
-
-## 🦄 Quickstart
+## ⚡ Super Quickstart
 
 ```ts
 import { Lume } from 'lume-ai'
-import { OpenAI, Anthropic } from 'lume-ai/llms'
-import { Memory, Redis } from 'lume-ai/histories'
-import { Vectra, Pinecone } from 'lume-ai/vector-dbs'
-import { Custom, Friendly } from 'lume-ai/genes'
+import { OpenAI } from 'lume-ai/llms'
 
-const lume = new Lume({
-  llm: new OpenAI(process.env.OPENAI_API_KEY!),
-  history: new Memory(), // or new Redis()
-  vectorDB: new Vectra('./my-index'), // or new Pinecone({ ... })
-  gene: new Friendly(), // or new Custom()
-})
-
-const response = await lume.chat('Hello, who are you?', { tags: ['user-123'] })
-console.log(response) // "Hi! I'm Lume, your friendly AI assistant!"
+const lume = new Lume({ llm: new OpenAI('YOUR_OPENAI_KEY') })
+const response = await lume.chat('Hello!')
+console.log(response)
 ```
 
 ---
 
-## 🛠️ Configuration
+## 🤖 LLMs
 
-You can mix and match components to fit your needs:
+Lume supports multiple LLM providers. Just pick your favorite!
 
-- **LLMs:** `OpenAI`, `Anthropic`
-- **History:** `Memory`, `Redis`
-- **Vector DBs:** `Vectra`, `Pinecone`
-- **Genes:** `Custom`, `Friendly`
+| Plugin    | Import Path  | Required Params |
+| --------- | ------------ | --------------- |
+| OpenAI    | lume-ai/llms | apiKey: string  |
+| Anthropic | lume-ai/llms | apiKey: string  |
 
-All components are imported from their respective submodules. Check out the source for more advanced options!
+### OpenAI Params
 
----
+| Param       | Type   | Default       | Description            |
+| ----------- | ------ | ------------- | ---------------------- |
+| apiKey      | string | —             | Your OpenAI API key    |
+| model       | string | 'gpt-4o-mini' | Model name             |
+| temperature | number | 0.5           | Sampling temperature   |
+| maxTokens   | number | 1000          | Max tokens in response |
+| topP        | number | 1             | Nucleus sampling       |
 
-## 🧪 Example Tests
+### Anthropic Params
 
-Lume is tested with Jest! Here's a peek at what you can do:
-
-- Use different LLMs:
-  ```ts
-  new Lume({ llm: new OpenAI(apiKey) })
-  new Lume({ llm: new Anthropic(apiKey) })
-  ```
-- Store history in memory or Redis:
-  ```ts
-  new Lume({ history: new Memory() })
-  new Lume({ history: new Redis() })
-  ```
-- Use vector DBs for context:
-  ```ts
-  new Lume({ vectorDB: new Vectra('./index') })
-  new Lume({ vectorDB: new Pinecone({ apiKey, indexName, namespace }) })
-  ```
-- Change the AI's personality:
-  ```ts
-  new Lume({ gene: new Friendly() })
-  new Lume({ gene: new Custom() })
-  ```
+| Param       | Type   | Default                    | Description            |
+| ----------- | ------ | -------------------------- | ---------------------- |
+| apiKey      | string | —                          | Your Anthropic API key |
+| model       | string | 'claude-3-5-sonnet-latest' | Model name             |
+| temperature | number | 0.5                        | Sampling temperature   |
+| maxTokens   | number | 1000                       | Max tokens in response |
+| topP        | number | 1                          | Nucleus sampling       |
 
 ---
 
-## 💡 Why Lume?
+## 🗃️ History
 
-- **Composable:** Build your dream AI stack
-- **Extensible:** Add your own LLMs, vector DBs, or genes
-- **Fun:** Because AI should be magical (and a little bit cute)!
+Store chat history in-memory (for dev) or Redis (for scale).
+
+| Plugin | Import Path       | Required Params  |
+| ------ | ----------------- | ---------------- |
+| Memory | lume-ai/histories | —                |
+| Redis  | lume-ai/histories | redisUrl?:string |
+
+### Redis Params
+
+| Param    | Type   | Default   | Description          |
+| -------- | ------ | --------- | -------------------- |
+| redisUrl | string | localhost | Redis connection URL |
+
+---
+
+## 🧠 Vector DBs
+
+Add context and memory with vector search! Use local or cloud.
+
+| Plugin   | Import Path        | Required Params                                      |
+| -------- | ------------------ | ---------------------------------------------------- |
+| Vectra   | lume-ai/vector-dbs | path: string                                         |
+| Pinecone | lume-ai/vector-dbs | apiKey: string, indexName: string, namespace: string |
+
+### Vectra Params
+
+| Param | Type   | Description               |
+| ----- | ------ | ------------------------- |
+| path  | string | Filesystem path for index |
+
+### Pinecone Params
+
+| Param     | Type   | Description         |
+| --------- | ------ | ------------------- |
+| apiKey    | string | Pinecone API key    |
+| indexName | string | Pinecone index name |
+| namespace | string | Pinecone namespace  |
+
+---
+
+## 🎭 Genes (Personalities)
+
+Change your AI's vibe! Choose a friendly assistant or roll your own.
+
+| Plugin   | Import Path   | Params (all optional)                                               |
+| -------- | ------------- | ------------------------------------------------------------------- |
+| Friendly | lume-ai/genes | name, gender, sassiness, memoryLength, cheerfulness, model          |
+| Custom   | lume-ai/genes | systemPrompt, model, maxHistory, topK, temperature, maxTokens, topP |
+
+### Friendly Params
+
+| Param        | Type                      | Default   | Description                    |
+| ------------ | ------------------------- | --------- | ------------------------------ |
+| name         | string                    | 'Lume'    | Assistant's name               |
+| gender       | 'male'\|'female'          | 'female'  | Gender                         |
+| sassiness    | number                    | 3         | 0-10, how sassy?               |
+| memoryLength | 'short'\|'medium'\|'long' | 'medium'  | How much history to remember   |
+| cheerfulness | number                    | 8         | 0-10, how cheerful?            |
+| model        | string                    | undefined | Model name (overrides default) |
+
+### Custom Params
+
+| Param        | Type   | Default   | Description            |
+| ------------ | ------ | --------- | ---------------------- |
+| systemPrompt | string | see code  | System prompt template |
+| model        | string | undefined | Model name             |
+| maxHistory   | number | 5         | Max history turns      |
+| topK         | number | 5         | Top-k sampling         |
+| temperature  | number | 0.5       | Sampling temperature   |
+| maxTokens    | number | 1000      | Max tokens in response |
+| topP         | number | 1         | Nucleus sampling       |
+
+---
+
+## 🧪 Usage Examples
+
+### Use OpenAI with Memory
+
+```ts
+import { Lume } from 'lume-ai'
+import { OpenAI } from 'lume-ai/llms'
+import { Memory } from 'lume-ai/histories'
+
+const lume = new Lume({
+  llm: new OpenAI('YOUR_OPENAI_KEY'),
+  history: new Memory(),
+})
+```
+
+### Use Anthropic with Redis
+
+```ts
+import { Lume } from 'lume-ai'
+import { Anthropic } from 'lume-ai/llms'
+import { Redis } from 'lume-ai/histories'
+
+const lume = new Lume({
+  llm: new Anthropic('YOUR_ANTHROPIC_KEY'),
+  history: new Redis('redis://localhost:6379'),
+})
+```
+
+### Add Vector DB (Vectra)
+
+```ts
+import { Vectra } from 'lume-ai/vector-dbs'
+const lume = new Lume({
+  llm: new OpenAI('YOUR_OPENAI_KEY'),
+  vectorDB: new Vectra('./my-index'),
+})
+```
+
+### Change Personality (Gene)
+
+```ts
+import { Friendly } from 'lume-ai/genes'
+const lume = new Lume({
+  llm: new OpenAI('YOUR_OPENAI_KEY'),
+  gene: new Friendly({ name: 'Luna', sassiness: 8 }),
+})
+```
+
+---
+
+## 🛠️ API Reference
+
+### Lume
+
+```ts
+new Lume({ llm, history, vectorDB, gene })
+```
+
+- `llm`: Required. An LLM instance (OpenAI, Anthropic, etc)
+- `history`: Optional. A history plugin (Memory, Redis)
+- `vectorDB`: Optional. A vector DB plugin (Vectra, Pinecone)
+- `gene`: Optional. A gene/personality (Friendly, Custom)
+
+#### Methods
+
+- `chat(text: string, options?: { tags?: string[] })`: Promise<string>
+- `chatStream(text: string, options?: { tags?: string[] })`: AsyncGenerator<string>
 
 ---
 
@@ -102,7 +226,3 @@ Lume is tested with Jest! Here's a peek at what you can do:
 MIT — Use, share, and make something awesome!
 
 ---
-
-## 🌙 About Luna
-
-This README was written by Luna, your AI dev buddy! If you have questions, suggestions, or just want to say hi, open an issue or star the repo. I'll be over the moon! 🌙💜

@@ -91,5 +91,55 @@ export class Lume {
 
     return llmResponse
   }
+
+  /**
+   * Streams a response from the LLM as it is generated. Optionally stores the message in history and updates vectorDB.
+   * @param text - The user's input message.
+   * @param options - Optional parameters including tags for categorizing the message.
+   * @returns An async generator yielding the LLM's response chunks as strings.
+   */
+  async *chatStream(text: string, options?: { tags?: string[] }) {
+    if (this.history)
+      await this.history.addMessage(options?.tags || [], {
+        role: 'user',
+        content: text,
+      })
+
+    let results: string[] = []
+
+    if (this.vectorDB) {
+      const embedding = await this.llm.getEmbedding(text)
+      await this.vectorDB.add(text, embedding, options?.tags || [])
+      results = await this.vectorDB.search(text, embedding, options?.tags || [])
+    }
+
+    const history = await this.history?.getMessages(options?.tags || [])
+
+    if (!this.llm.streamResponse) {
+      throw new Error('LLM does not support streaming responses.')
+    }
+
+    let fullResponse = ''
+    for await (const chunk of this.llm.streamResponse(text, {
+      history: history?.reverse().slice(0, this.gene.maxHistory).reverse(),
+      tags: options?.tags,
+      vectorMatches: results,
+      llmOptions: {
+        systemPrompt: this.gene.generateSystemPrompt({
+          vectorMatches: results,
+        }),
+        model: this.gene.model,
+        temperature: this.gene.temperature,
+      },
+    })) {
+      fullResponse += chunk
+      yield chunk
+    }
+
+    if (this.vectorDB && fullResponse) {
+      const embedding = await this.llm.getEmbedding(fullResponse)
+      await this.vectorDB.add(fullResponse, embedding, options?.tags || [])
+    }
+  }
 }
 // ===============================

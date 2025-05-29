@@ -70,6 +70,50 @@ export class Anthropic extends LLM {
   }
 
   /**
+   * Streams a response from the Anthropic Claude model based on the provided text and options.
+   * @param text - The user's input message.
+   * @param options - Optional parameters including message history and tags for context.
+   * @returns A promise that resolves to the model's response as a string.
+   */
+  async *streamResponse(
+    text: string,
+    options: {
+      history?: Message[]
+      tags?: string[]
+      vectorMatches?: string[]
+      llmOptions: {
+        systemPrompt: string
+        model?: string
+        temperature?: number
+        maxTokens?: number
+        topP?: number
+      }
+    }
+  ) {
+    const response = await this.llm.messages.create({
+      model: options.llmOptions.model || 'claude-3-5-sonnet-latest',
+      max_tokens: options.llmOptions.maxTokens || 1000,
+      system: options.llmOptions.systemPrompt,
+      messages: [...(options.history || []), { role: 'user', content: text }],
+      temperature: options.llmOptions.temperature || 0.5,
+      top_p: options.llmOptions.topP || 1,
+      stream: true,
+    })
+
+    for await (const chunk of response) {
+      yield (
+        'delta' in chunk && 'text' in chunk.delta
+          ? 'text' in chunk.delta
+            ? chunk.delta.text
+            : ''
+          : 'text' in chunk
+          ? chunk.text
+          : ''
+      ) as string
+    }
+  }
+
+  /**
    * Gets an embedding from the Anthropic Claude model based on the provided text.
    * @param text - The input text to get an embedding for.
    * @returns A promise that resolves to the model's embedding as an array of numbers.

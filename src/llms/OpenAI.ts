@@ -66,6 +66,48 @@ export class OpenAI extends LLM {
   }
 
   /**
+   * Stream a response from the OpenAI GPT model based on the provided text and options.
+   * @param text - The user's input message.
+   * @param options - Optional parameters including message history and tags for context.
+   * @returns A promise that resolves to the model's response as a string.
+   */
+  async *streamResponse(
+    text: string,
+    options: {
+      history?: Message[]
+      tags?: string[]
+      vectorMatches?: string[]
+      llmOptions: {
+        systemPrompt: string
+        model?: string
+        temperature?: number
+        maxTokens?: number
+        topP?: number
+      }
+    }
+  ) {
+    const response = await this.llm.chat.completions.create({
+      model: options.llmOptions.model || 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: options.llmOptions.systemPrompt,
+        },
+        ...(options.history || []),
+        { role: 'user', content: text },
+      ],
+      temperature: options.llmOptions.temperature || 0.5,
+      max_tokens: options.llmOptions.maxTokens || 1000,
+      top_p: options.llmOptions.topP || 1,
+      stream: true,
+    })
+
+    for await (const chunk of response) {
+      yield chunk.choices[0].delta.content || ''
+    }
+  }
+
+  /**
    * Gets an embedding from the OpenAI GPT model based on the provided text.
    * @param text - The input text to get an embedding for.
    * @returns A promise that resolves to the model's embedding as an array of numbers.

@@ -1,6 +1,6 @@
 {
   "name": "lume-ai",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A powerful yet simple library to build your own AI applications.",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "packageManager": "pnpm@10.6.5",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LightYagami20/lume-ai.git"
+    "url": "https://github.com/LightYagami200/lume-ai.git"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
