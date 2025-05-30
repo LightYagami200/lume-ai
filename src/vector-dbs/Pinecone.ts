@@ -75,6 +75,7 @@ export class Pinecone extends VectorDB {
           tag,
         },
       })
+
       items.push(...item.matches)
     }
 

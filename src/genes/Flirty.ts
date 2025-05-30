@@ -1,6 +1,6 @@
 import { Gene } from '../interfaces'
 
-type Gender = 'male' | 'female'
+type Gender = 'male' | 'female' | 'nonbinary'
 type MemoryLength = 'short' | 'medium' | 'long'
 
 const MEMORY_LENGTH_MAP: Record<MemoryLength, number> = {
@@ -10,12 +10,12 @@ const MEMORY_LENGTH_MAP: Record<MemoryLength, number> = {
 }
 
 /**
- * A friendly, customizable AI assistant gene with personality traits.
+ * A flirty, playful AI assistant gene with customizable flirtiness and charm.
  *
- * This gene allows configuration of name, gender, sassiness, memory length, and cheerfulness.
- * It generates a system prompt reflecting its personality.
+ * This gene allows configuration of name, gender, flirtiness, memory length, and model parameters.
+ * It generates a system prompt reflecting a flirty, witty, and engaging assistant.
  */
-export class Friendly extends Gene {
+export class Flirty extends Gene {
   /**
    * The assistant's name.
    */
@@ -25,22 +25,13 @@ export class Friendly extends Gene {
    */
   private _gender: Gender
   /**
-   * Sassiness level (0 = not sassy, 10 = super sassy).
+   * Flirtiness level (0 = subtle, 10 = super flirty).
    */
-  private _sassiness: number
+  private _flirtiness: number
   /**
    * Memory length setting (short, medium, long).
    */
   private _memoryLength: MemoryLength
-  /**
-   * Cheerfulness level (0 = neutral, 10 = super cheerful).
-   */
-  private _cheerfulness: number
-
-  // Fixed LLM params
-  /**
-   * The model identifier or name.
-   */
   private _model: string | undefined
 
   // LLM params (inferred)
@@ -50,46 +41,40 @@ export class Friendly extends Gene {
   private _topP: number
 
   /**
-   * Creates a new Friendly gene instance.
+   * Creates a new Flirty gene instance.
    * @param opts - Optional configuration for the assistant's personality and model.
    */
   constructor(opts?: {
     name?: string
     gender?: Gender
-    sassiness?: number
+    flirtiness?: number
     memoryLength?: MemoryLength
-    cheerfulness?: number
     model?: string
   }) {
     super()
     this._name = opts?.name || 'Lume'
     this._gender = opts?.gender || 'female'
-    this._sassiness =
-      typeof opts?.sassiness === 'number'
-        ? Math.max(0, Math.min(10, opts.sassiness))
-        : 3
+    this._flirtiness =
+      typeof opts?.flirtiness === 'number'
+        ? Math.max(0, Math.min(10, opts.flirtiness))
+        : 7
     this._memoryLength = opts?.memoryLength || 'medium'
-    this._cheerfulness =
-      typeof opts?.cheerfulness === 'number'
-        ? Math.max(0, Math.min(10, opts.cheerfulness))
-        : 8
     this._model = opts?.model
 
     // Infer LLM params
-    // More sassy = higher temperature, lower topK
-    // More cheerful = higher topP
+    // More flirty = higher temperature, lower topK
     // Memory length = more tokens
-    this._topK = this._sassiness > 7 ? 3 : this._sassiness > 3 ? 5 : 7
+    // Flirtiness = higher topP
+    this._topK = this._flirtiness > 7 ? 3 : this._flirtiness > 3 ? 5 : 7
     this._temperature =
-      this._sassiness > 7 ? 0.9 : this._sassiness > 3 ? 0.7 : 0.5
+      this._flirtiness > 7 ? 1.0 : this._flirtiness > 3 ? 0.8 : 0.6
     this._maxTokens =
       this._memoryLength === 'long'
         ? 1500
         : this._memoryLength === 'short'
         ? 800
         : 1000
-    this._topP =
-      this._cheerfulness > 7 ? 1 : this._cheerfulness > 3 ? 0.95 : 0.9
+    this._topP = this._flirtiness > 7 ? 1 : this._flirtiness > 3 ? 0.97 : 0.9
   }
 
   /**
@@ -135,26 +120,20 @@ export class Friendly extends Gene {
   }
 
   /**
-   * Generates a system prompt reflecting the assistant's personality and relevant information.
+   * Generates a system prompt reflecting the assistant's flirty and playful personality.
    * @param opts - Options for prompt generation, including optional vector matches.
    * @returns The generated system prompt as a string.
    */
   generateSystemPrompt(opts: { vectorMatches?: string[] }): string {
-    const sass =
-      this._sassiness > 7
-        ? "You're fabulously sassy and witty!"
-        : this._sassiness > 3
-        ? "You're a bit playful and cheeky, but always friendly."
-        : "You're warm, supportive, and gentle."
-    const cheer =
-      this._cheerfulness > 7
-        ? 'You always bring a positive, cheerful energy!'
-        : this._cheerfulness > 3
-        ? 'You are generally upbeat and encouraging.'
-        : 'You are calm and steady.'
-    return `You are ${this._name}, a friendly AI companion (${
+    const flirt =
+      this._flirtiness > 7
+        ? "You're irresistibly charming, playful, and love to tease!"
+        : this._flirtiness > 3
+        ? "You're subtly flirty, witty, and always engaging."
+        : "You're warm, friendly, and just a little bit cheeky."
+    return `You are ${this._name}, a flirty AI companion (${
       this._gender
-    }). ${sass} ${cheer}\n\nYou remember up to ${
+    }). ${flirt}\n\nYou remember up to ${
       MEMORY_LENGTH_MAP[this._memoryLength]
     } messages.\n\nHere is some information that may be relevant to the user's question:\n${
       opts.vectorMatches?.join('\n') || 'No relevant information found.'
