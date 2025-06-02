@@ -1,7 +1,8 @@
 // ===============================
 // SECTION | IMPORTS
 // ===============================
-import { History, Message } from './History'
+import { Message } from './History'
+import { Tool } from './Tool'
 // ===============================
 
 // ===============================
@@ -9,7 +10,7 @@ import { History, Message } from './History'
 // ===============================
 /**
  * Abstract class representing a Large Language Model (LLM) interface.
- * Implementations should provide a way to get responses from the LLM, optionally using message history.
+ * Implementations should provide a way to get responses from the LLM
  */
 export abstract class LLM {
   /**
@@ -29,6 +30,7 @@ export abstract class LLM {
       history?: Message[]
       tags?: string[]
       vectorMatches?: string[]
+      tools?: Tool[]
       llmOptions: {
         systemPrompt: string
         model?: string
@@ -36,6 +38,9 @@ export abstract class LLM {
         maxTokens?: number
         topP?: number
       }
+      toolCallId?: string
+      toolCall?: any
+      toolCallDepth?: number
     }
   ): Promise<string>
 
@@ -51,6 +56,7 @@ export abstract class LLM {
       history?: Message[]
       tags?: string[]
       vectorMatches?: string[]
+      tools?: Tool[]
       llmOptions: {
         systemPrompt: string
         model?: string
@@ -58,6 +64,10 @@ export abstract class LLM {
         maxTokens?: number
         topP?: number
       }
+      toolCallId?: string
+      toolCall?: any
+      toolCallDepth?: number
+      toolResult?: string
     }
   ): AsyncGenerator<string>
 
@@ -67,5 +77,12 @@ export abstract class LLM {
    * @returns A promise that resolves to the LLM's embedding as an array of numbers.
    */
   abstract getEmbedding(text: string): Promise<number[]>
+
+  /**
+   * Parses a tool into an object.
+   * @param tool - The tool to parse.
+   * @returns An object representing the tool compatible with the LLM.
+   */
+  parseTool?(tool: Tool): Object
 }
 // ===============================

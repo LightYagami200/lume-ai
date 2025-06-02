@@ -2,7 +2,7 @@
 // SECTION | IMPORTS
 // ===============================
 import { Custom } from '../genes/Custom'
-import { LLM, History, VectorDB, Gene } from '../interfaces'
+import { LLM, History, VectorDB, Gene, Tool } from '../interfaces'
 // ===============================
 
 // ===============================
@@ -32,6 +32,11 @@ export class Lume {
   private gene: Gene
 
   /**
+   * Optional tools instance used for executing tools.
+   */
+  private tools: Tool[] = []
+
+  /**
    * Constructs a new Lume service instance.
    * @param config - Configuration object containing the LLM instance and optional history manager.
    */
@@ -40,11 +45,13 @@ export class Lume {
     history?: History
     vectorDB?: VectorDB
     gene?: Gene
+    tools?: Tool[]
   }) {
     this.llm = config.llm
     this.history = config.history
     this.vectorDB = config.vectorDB
     this.gene = config.gene || new Custom()
+    this.tools = config.tools || []
   }
 
   /**
@@ -75,12 +82,17 @@ export class Lume {
       history: history?.reverse().slice(0, this.gene.maxHistory).reverse(),
       tags: options?.tags,
       vectorMatches: results,
+      tools: this.tools,
       llmOptions: {
         systemPrompt: this.gene.generateSystemPrompt({
           vectorMatches: results,
         }),
         model: this.gene.model,
         temperature: this.gene.temperature,
+        maxTokens:
+          (this.gene.maxTokens || 1000) +
+          this.tools.reduce((acc, tool) => acc + tool.extraTokens, 0),
+        topP: this.gene.topP,
       },
     })
 
@@ -107,6 +119,10 @@ export class Lume {
 
     let results: string[] = []
 
+    if (this.tools.length > 0) {
+      throw new Error('Tools are not supported for streaming responses.')
+    }
+
     if (this.vectorDB) {
       const embedding = await this.llm.getEmbedding(text)
       await this.vectorDB.add(text, embedding, options?.tags || [])
@@ -124,12 +140,17 @@ export class Lume {
       history: history?.reverse().slice(0, this.gene.maxHistory).reverse(),
       tags: options?.tags,
       vectorMatches: results,
+      tools: this.tools,
       llmOptions: {
         systemPrompt: this.gene.generateSystemPrompt({
           vectorMatches: results,
         }),
         model: this.gene.model,
         temperature: this.gene.temperature,
+        maxTokens:
+          (this.gene.maxTokens || 1000) +
+          this.tools.reduce((acc, tool) => acc + tool.extraTokens, 0),
+        topP: this.gene.topP,
       },
     })) {
       fullResponse += chunk

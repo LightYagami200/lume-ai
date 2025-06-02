@@ -2,7 +2,7 @@
 // SECTION | IMPORTS
 // ===============================
 import { GoogleGenAI } from '@google/genai'
-import { LLM, Message } from '../interfaces'
+import { LLM, Message, Tool } from '../interfaces'
 // ===============================
 
 // ===============================
@@ -41,6 +41,7 @@ export class Gemini extends LLM {
       history?: Message[]
       tags?: string[]
       vectorMatches?: string[]
+      tools?: Tool[]
       llmOptions: {
         systemPrompt: string
         model?: string
@@ -50,12 +51,9 @@ export class Gemini extends LLM {
       }
     }
   ) {
-    // const response = await this.llm.chat.completions.create({
-    //   messages: [
-    //     ...(options.history || []),
-    //     { role: 'user', content: text },
-    //   ],
-    // })
+    if (options.tools && options.tools.length > 0) {
+      throw new Error('Gemini plugin does not support tools yet')
+    }
 
     const response = await this.llm.models.generateContent({
       model: options.llmOptions.model || 'gemini-2.0-flash',
@@ -92,6 +90,7 @@ export class Gemini extends LLM {
       history?: Message[]
       tags?: string[]
       vectorMatches?: string[]
+      tools?: Tool[]
       llmOptions: {
         systemPrompt: string
         model?: string
@@ -137,6 +136,15 @@ export class Gemini extends LLM {
       contents: text,
     })
     return response.embeddings?.[0]?.values || []
+  }
+
+  /**
+   * Parses a tool into an object.
+   * @param tool - The tool to parse.
+   * @returns An object representing the tool compatible with the LLM.
+   */
+  parseTool(tool: Tool): Object {
+    return {}
   }
 }
 // ===============================
