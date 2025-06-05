@@ -1,8 +1,8 @@
 {
   "name": "lume-ai",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A powerful yet simple library to build your own AI applications.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest"
@@ -43,5 +43,12 @@
     "uuid": "^11.1.0",
     "vectra": "^0.11.1",
     "voyageai": "^0.0.4"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./llms": "./dist/llms/index.js",
+    "./genes": "./dist/genes/index.js",
+    "./histories": "./dist/histories/index.js",
+    "./tools": "./dist/tools/index.js"
   }
 }
